@@ -1,0 +1,45 @@
+token: 'YOUR_TOKEN'     # Telegram Bot Token
+debug: false            # Get more information about the requests being sent to Telegram
+admins:                 # List of user IDs that can use the bot
+  - YOUR_TG_USER_ID
+menu:                   # Bot menu options
+  title: CTL Bot        # Message & button title
+  buttons:              # Array submenu
+    - title: Services
+      buttons:
+        - title: Status MyService_1
+          command:      # Shell-command to run on the server when this menu item is selected
+            name: sudo
+            args:
+              - systemctl
+              - status
+              - MyService_1.service
+        - title: Status MyService_2
+          buttons:
+            - title: Start
+              command:
+                name: sudo
+                args:
+                  - systemctl
+                  - start
+                  - MyService_2.service
+            - title: Stop
+              command:
+                name: sudo
+                args:
+                  - systemctl
+                  - stop
+                  - MyService_2.service
+          command:
+            name: sudo
+            args:
+              - systemctl
+              - status
+              - MyService_2.service
+    - title: System
+      buttons:
+        - title: Reboot
+          command:
+            name: sudo
+            args:
+              - reboot
