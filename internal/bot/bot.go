@@ -1,27 +1,29 @@
-package main
+package bot
 
 import (
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"go_ctl_bot/internal/config"
+	"go_ctl_bot/internal/menu"
 	"log"
 	"os/exec"
 )
 
-func (config Config) RunBot() {
-	client, err := tgbotapi.NewBotAPI(config.Token)
+func RunBot(cfg *config.Config) {
+	client, err := tgbotapi.NewBotAPI(cfg.Token)
 	if err != nil {
 		panic(err)
 	}
 
-	client.Debug = config.Debug
+	client.Debug = cfg.Debug
 
 	log.Printf("Authorized on account %s\n", client.Self.UserName)
 
-	menu := CreateRootMenu(&config.Menu)
+	rootMenu := menu.CreateRootMenu(&cfg.Menu)
 
-	for _, admin := range config.Admins {
-		msg := tgbotapi.NewMessage(admin, menu.Title)
-		msg.ReplyMarkup = menu.Keyboard
+	for _, admin := range cfg.Admins {
+		msg := tgbotapi.NewMessage(admin, rootMenu.Title)
+		msg.ReplyMarkup = rootMenu.Keyboard
 		if _, err := client.Send(msg); err != nil {
 			log.Println(err)
 		}
@@ -33,7 +35,7 @@ func (config Config) RunBot() {
 	updates := client.GetUpdatesChan(updateConfig)
 
 	for update := range updates {
-		if !isAdmin(update.SentFrom(), config.Admins) {
+		if !isAdmin(update.SentFrom(), cfg.Admins) {
 			continue
 		}
 
@@ -46,8 +48,8 @@ func (config Config) RunBot() {
 
 			switch update.Message.Command() {
 			case "start":
-				msg.Text = menu.Title
-				msg.ReplyMarkup = menu.Keyboard
+				msg.Text = rootMenu.Title
+				msg.ReplyMarkup = rootMenu.Keyboard
 			default:
 				continue
 			}
@@ -56,18 +58,18 @@ func (config Config) RunBot() {
 				log.Panic(err)
 			}
 		} else if update.CallbackQuery != nil {
-			handleCallbackQuery(update, client, menu)
+			handleCallbackQuery(update, client, rootMenu)
 		}
 	}
 }
 
-func handleCallbackQuery(update tgbotapi.Update, client *tgbotapi.BotAPI, menu *Menu) {
+func handleCallbackQuery(update tgbotapi.Update, client *tgbotapi.BotAPI, rootMenu *menu.Menu) {
 	callback := tgbotapi.NewCallback(update.CallbackQuery.ID, "")
 	if _, err := client.Request(callback); err != nil {
 		panic(err)
 	}
 
-	currentMenu := menu.FindByData(update.CallbackQuery.Data)
+	currentMenu := rootMenu.FindByData(update.CallbackQuery.Data)
 
 	msg := tgbotapi.NewEditMessageTextAndMarkup(
 		update.CallbackQuery.Message.Chat.ID,

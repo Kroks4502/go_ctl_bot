@@ -1,7 +1,8 @@
-package main
+package menu
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"go_ctl_bot/internal/config"
 	"log"
 	"strconv"
 	"time"
@@ -9,7 +10,7 @@ import (
 
 type Menu struct {
 	Id int64
-	*ConfigButton
+	*config.Button
 	SubMenu   []*Menu
 	Keyboard  tgbotapi.InlineKeyboardMarkup
 	BackRef   *Menu
@@ -18,14 +19,14 @@ type Menu struct {
 
 var rootId = time.Now().Unix()
 
-func CreateRootMenu(configButton *ConfigButton) *Menu {
+func CreateRootMenu(configButton *config.Button) *Menu {
 	mapByStrId := make(map[string]*Menu)
 	nextId := rootId
 	return createSubMenu(configButton, &nextId, nil, mapByStrId)
 }
 
-func createSubMenu(configButton *ConfigButton, nextId *int64, backRef *Menu, mapByStrId map[string]*Menu) *Menu {
-	root := Menu{Id: *nextId, ConfigButton: configButton, SubMenu: []*Menu{}, BackRef: backRef, MapByData: mapByStrId}
+func createSubMenu(configButton *config.Button, nextId *int64, backRef *Menu, mapByStrId map[string]*Menu) *Menu {
+	root := Menu{Id: *nextId, Button: configButton, SubMenu: []*Menu{}, BackRef: backRef, MapByData: mapByStrId}
 	mapByStrId[strconv.FormatInt(root.Id, 10)] = &root
 
 	var rows [][]tgbotapi.InlineKeyboardButton

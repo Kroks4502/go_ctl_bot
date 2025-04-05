@@ -1,4 +1,4 @@
-module github.com/Kroks4502/go_ctl_bot
+module go_ctl_bot
 
 go 1.24.2
 

@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"flag"
@@ -9,16 +9,16 @@ import (
 )
 
 type Config struct {
-	Token  string       `yaml:"token"`
-	Debug  bool         `yaml:"debug"`
-	Admins []int64      `yaml:"admins"`
-	Menu   ConfigButton `yaml:"menu"`
+	Token  string  `yaml:"token"`
+	Debug  bool    `yaml:"debug"`
+	Admins []int64 `yaml:"admins"`
+	Menu   Button  `yaml:"menu"`
 }
 
-type ConfigButton struct {
-	Title   string         `yaml:"title"`
-	Buttons []ConfigButton `yaml:"buttons"`
-	Command ConfigCommand  `yaml:"command"`
+type Button struct {
+	Title   string        `yaml:"title"`
+	Buttons []Button      `yaml:"buttons"`
+	Command ConfigCommand `yaml:"command"`
 }
 
 type ConfigCommand struct {
@@ -26,7 +26,7 @@ type ConfigCommand struct {
 	Args []string `yaml:"args"`
 }
 
-func (menu *ConfigButton) Validate() {
+func (menu *Button) Validate() {
 	if menu.Title == "" {
 		log.Fatal("Config menu: `title` is required field in menu.")
 	}
