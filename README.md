@@ -39,7 +39,7 @@ Follow these steps:
 
 4. Now open the terminal and type the following command to spin up the bot locally:
    ```sh
-   go run .
+   go run cmd/bot/main.go
    ```
 
 ## Configuration
