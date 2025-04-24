@@ -5,6 +5,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"go_ctl_bot/internal/config"
 	"go_ctl_bot/internal/menu"
+	"go_ctl_bot/internal/notice"
 	"log"
 	"os/exec"
 )
@@ -18,6 +19,9 @@ func RunBot(cfg *config.Config) {
 	client.Debug = cfg.Debug
 
 	log.Printf("Authorized on account %s\n", client.Self.UserName)
+
+	noticeMonitor := notice.NewMonitor(client, cfg.Admins, "notice")
+	noticeMonitor.Start()
 
 	rootMenu := menu.CreateRootMenu(&cfg.Menu)
 
